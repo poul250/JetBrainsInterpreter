@@ -1,6 +1,7 @@
 package com.pawka.interpreter;
 
 import com.pawka.interpreter.exceptions.LexerException;
+import com.pawka.interpreter.exceptions.SyntaxError;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -195,7 +196,7 @@ public class Lexer {
             stringBuilder.append((char)ch);
             state = State.STATE_READ_ID;
         } else {
-            throw new LexerException("SYNTAX_ERROR");
+            throw new SyntaxError();
         }
 
         return true;

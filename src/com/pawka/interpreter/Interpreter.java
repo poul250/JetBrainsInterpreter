@@ -2,6 +2,7 @@ package com.pawka.interpreter;
 
 
 import com.pawka.interpreter.exceptions.InterpreterException;
+import com.pawka.interpreter.exceptions.SyntaxError;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class Interpreter {
         if (currentLexeme instanceof Lexer.LexNumber) {
             commands.add(new Commands.Push(sign * ((Lexer.LexNumber) currentLexeme).number));
         } else {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
         moveNext();
     }
@@ -65,7 +66,7 @@ public class Interpreter {
     void binaryOperation() throws IOException, InterpreterException {
         // Check for opening bracket
         if (!(currentLexeme instanceof Lexer.LexParenthesisOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // First expression
@@ -101,7 +102,7 @@ public class Interpreter {
 
         // Check closing bracket
         if (!(currentLexeme instanceof Lexer.LexParenthesisClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
         moveNext();
     }
@@ -120,7 +121,7 @@ public class Interpreter {
     void ifExpression() throws IOException, InterpreterException {
         // "["
         if (!(currentLexeme instanceof Lexer.LexSquareOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // <expression>
@@ -133,17 +134,17 @@ public class Interpreter {
 
         // "]"
         if (!(currentLexeme instanceof Lexer.LexSquareClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // "?"
         if (!(moveNext() instanceof Lexer.LexQuestionMark)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // "{"
         if (!(moveNext() instanceof Lexer.LexBraceOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // <expression>
@@ -158,17 +159,17 @@ public class Interpreter {
         ifFalseGoTo.setAddress(commands.size());
         // "}"
         if (!(currentLexeme instanceof Lexer.LexBraceClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // ":"
         if (!(moveNext() instanceof Lexer.LexColon)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // "{"
         if (!(moveNext() instanceof Lexer.LexBraceOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         // <expression>
@@ -180,7 +181,7 @@ public class Interpreter {
 
         // "}"
         if (!(currentLexeme instanceof Lexer.LexBraceClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         moveNext();
@@ -188,7 +189,7 @@ public class Interpreter {
 
     void identifier() throws InterpreterException, IOException {
         if (!(currentLexeme instanceof Lexer.LexIdentifier)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
         String name = ((Lexer.LexIdentifier) currentLexeme).identifier;
         if (!(functionArgs.contains(name))) {
@@ -220,7 +221,7 @@ public class Interpreter {
     void callExpression() throws IOException, InterpreterException {
         String name = ((Lexer.LexIdentifier) currentLexeme).identifier;
         if (!(moveNext() instanceof Lexer.LexParenthesisOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         if (!Context.functions.containsKey(name)) {
@@ -232,7 +233,7 @@ public class Interpreter {
 
         commands.add(new Commands.FunctionCall(name));
         if (!(currentLexeme instanceof Lexer.LexParenthesisClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
         moveNext();
     }
@@ -246,7 +247,6 @@ public class Interpreter {
             if (moveNext() instanceof Lexer.LexParenthesisOpen) {
                 unget(name);
                 callExpression();
-                // TODO: add smt for function call
             } else {
                 unget(name);
                 identifier();
@@ -258,7 +258,7 @@ public class Interpreter {
         } else if (currentLexeme instanceof Lexer.LexSquareOpen) {
             ifExpression();
         } else {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
     }
 
@@ -269,7 +269,7 @@ public class Interpreter {
 
         while (moveNext() instanceof Lexer.LexComma) {
             if (!(moveNext() instanceof Lexer.LexIdentifier)) {
-                throw new InterpreterException("SYNTAX ERROR");
+                throw new SyntaxError();
             }
             functionArgs.add(((Lexer.LexIdentifier)currentLexeme).identifier);
         }
@@ -282,15 +282,15 @@ public class Interpreter {
         parameterList();
 
         if (!(currentLexeme instanceof Lexer.LexParenthesisClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         if (!(moveNext() instanceof Lexer.LexEquals)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         if (!(moveNext() instanceof Lexer.LexBraceOpen)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
 
         moveNext();
@@ -298,7 +298,7 @@ public class Interpreter {
         commands.add(new Commands.ExitFunction());
 
         if (!(currentLexeme instanceof Lexer.LexBraceClose)) {
-            throw new InterpreterException("SYNTAX ERROR");
+            throw new SyntaxError();
         }
         moveNext();
     }
@@ -311,7 +311,7 @@ public class Interpreter {
 
             Lexer.LexIdentifier name = (Lexer.LexIdentifier) currentLexeme;
             if (!(moveNext() instanceof Lexer.LexParenthesisOpen)) {
-                throw new InterpreterException("SYNTAX ERROR");
+                throw new SyntaxError();
             }
 
             if (!(moveNext() instanceof Lexer.LexIdentifier)) {
@@ -322,7 +322,7 @@ public class Interpreter {
 
             functionDefinition();
             if (!(currentLexeme instanceof Lexer.LexEOL)) {
-                throw new InterpreterException("SYNTAX ERROR");
+                throw new SyntaxError();
             }
             moveNext();
 
