@@ -8,12 +8,14 @@ import java.io.IOException;
 
 public class Interpreter {
     private Program program;
+    private Commands commands;
     private Lexer lexer;
     private Lexer.Lex currentLexeme;
 
     public Interpreter(BufferedReader reader) {
         lexer = new Lexer(reader);
         program = new Program();
+        commands = new Commands();
     }
 
     private Lexer.Lex moveNext() throws IOException {
@@ -30,7 +32,7 @@ public class Interpreter {
             moveNext();
         }
         if (currentLexeme instanceof Lexer.LexNumber) {
-            program.add(new Program.Push(sign * ((Lexer.LexNumber) currentLexeme).number));
+            commands.add(new Commands.Push(sign * ((Lexer.LexNumber) currentLexeme).number));
         } else {
             throw new InterpreterException("SYNTAX ERROR");
         }
@@ -51,23 +53,23 @@ public class Interpreter {
         expression();
 
         // Get operation
-        Program.Performer performer = null;
+        Commands.Performer performer = null;
         if (currentLexeme instanceof Lexer.LexPlus) {
-            performer = new Program.Add();
+            performer = new Commands.Add();
         } else if (currentLexeme instanceof Lexer.LexMinus) {
-            performer = new Program.Sub();
+            performer = new Commands.Sub();
         } else if (currentLexeme instanceof Lexer.LexMul) {
-            performer = new Program.Mul();
+            performer = new Commands.Mul();
         } else if (currentLexeme instanceof Lexer.LexDiv) {
-            performer = new Program.Div();
+            performer = new Commands.Div();
         } else if (currentLexeme instanceof Lexer.LexMod) {
-            performer = new Program.Mod();
+            performer = new Commands.Mod();
         } else if (currentLexeme instanceof Lexer.LexLess) {
-            performer = new Program.Less();
+            performer = new Commands.Less();
         } else if (currentLexeme instanceof Lexer.LexGreater) {
-            performer = new Program.Greater();
+            performer = new Commands.Greater();
         } else if (currentLexeme instanceof Lexer.LexEquals) {
-            performer = new Program.Equals();
+            performer = new Commands.Equals();
         }
 
         // Second expression
@@ -75,7 +77,7 @@ public class Interpreter {
         expression();
 
         // Push operation for POLIZ
-        program.add(performer);
+        commands.add(performer);
 
         // Check closing bracket
         if (!(currentLexeme instanceof Lexer.LexParenthesisClose)) {
@@ -106,8 +108,8 @@ public class Interpreter {
         expression();
 
         // goto after if statement
-        Program.IfFalseGoTo ifFalseGoTo = new Program.IfFalseGoTo();
-        program.add(ifFalseGoTo);
+        Commands.IfFalseGoTo ifFalseGoTo = new Commands.IfFalseGoTo();
+        commands.add(ifFalseGoTo);
 
         // "]"
         if (!(currentLexeme instanceof Lexer.LexSquareClose)) {
@@ -129,11 +131,11 @@ public class Interpreter {
         expression();
 
         // jump from here to end of false block
-        Program.GoTo goTo = new Program.GoTo();
-        program.add(goTo);
+        Commands.GoTo goTo = new Commands.GoTo();
+        commands.add(goTo);
 
         // jump here if expression is false
-        ifFalseGoTo.setAddress(program.size());
+        ifFalseGoTo.setAddress(commands.size());
         // "}"
         if (!(currentLexeme instanceof Lexer.LexBraceClose)) {
             throw new InterpreterException("SYNTAX ERROR");
@@ -154,7 +156,7 @@ public class Interpreter {
         expression();
 
         // jump here after true block
-        goTo.setAddress(program.size());
+        goTo.setAddress(commands.size());
 
         // "}"
         if (!(currentLexeme instanceof Lexer.LexBraceClose)) {
@@ -189,6 +191,6 @@ public class Interpreter {
         moveNext();
         expression();
 
-        System.out.println(program.run());
+        System.out.println(program.run(commands));
     }
 }
