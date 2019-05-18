@@ -1,8 +1,7 @@
 package com.pawka.interpreter;
 
 
-import com.pawka.interpreter.exceptions.InterpreterException;
-import com.pawka.interpreter.exceptions.SyntaxError;
+import com.pawka.interpreter.exceptions.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class Interpreter {
     /**
      * "-"<number>|<number>
      */
-    void constExpression() throws InterpreterException, IOException {
+    void constExpression() throws IOException {
         int sign = 1;
         if (currentLexeme instanceof Lexer.LexMinus) {
             sign = -1;
@@ -59,7 +58,7 @@ public class Interpreter {
     /**
      * "("<expression><operation><expression>")"
      */
-    void binaryOperation() throws IOException, InterpreterException {
+    void binaryOperation() throws IOException{
         // Check for opening bracket
         if (!(currentLexeme instanceof Lexer.LexParenthesisOpen)) {
             throw new SyntaxError();
@@ -114,7 +113,7 @@ public class Interpreter {
      * {expression}<---------------   |
      * <-------------------------------
      */
-    void ifExpression() throws IOException, InterpreterException {
+    void ifExpression() throws IOException{
         // "["
         if (!(currentLexeme instanceof Lexer.LexSquareOpen)) {
             throw new SyntaxError();
@@ -183,19 +182,19 @@ public class Interpreter {
         moveNext();
     }
 
-    void identifier() throws InterpreterException, IOException {
+    void identifier() throws IOException {
         if (!(currentLexeme instanceof Lexer.LexIdentifier)) {
             throw new SyntaxError();
         }
         String name = ((Lexer.LexIdentifier) currentLexeme).identifier;
         if (!(functionArgs.contains(name))) {
-            throw new InterpreterException("PARAMETER NOT FOUND " + name + ":" + lexer.getLine());
+            throw new ParameterNotFound(name, lexer.getLine());
         }
         commands.add(new Commands.PushVar(name));
         moveNext();
     }
 
-    void argumentList(String name) throws IOException, InterpreterException {
+    void argumentList(String name) throws IOException{
         Function func = Context.functions.get(name);
         int counter = 1;
 
@@ -207,21 +206,21 @@ public class Interpreter {
         }
 
         if (func.params.size() != counter) {
-            throw new InterpreterException("ARGUMENT NUMBER MISMATCH " + name + ":" + lexer.getLine());
+            throw new ArgumentNumberMismatch(name, lexer.getLine());
         }
     }
 
     /**
      * <identifier> "(" <argument-list> ")"
      */
-    void callExpression() throws IOException, InterpreterException {
+    void callExpression() throws IOException {
         String name = ((Lexer.LexIdentifier) currentLexeme).identifier;
         if (!(moveNext() instanceof Lexer.LexParenthesisOpen)) {
             throw new SyntaxError();
         }
 
         if (!Context.functions.containsKey(name)) {
-            throw new InterpreterException("FUNCTION NOT FOUND " + name + ":" + lexer.getLine());
+            throw new FunctionNotFound(name, lexer.getLine());
         }
 
         moveNext();
@@ -237,7 +236,7 @@ public class Interpreter {
     /**
      * <identifier>|<constant-expression>|<binary-expression>|<if-expression>|<call-expression>
      */
-    void expression() throws IOException, InterpreterException {
+    void expression() throws IOException {
         if (currentLexeme instanceof Lexer.LexIdentifier) {
             Lexer.LexIdentifier name = (Lexer.LexIdentifier) currentLexeme;
             if (moveNext() instanceof Lexer.LexParenthesisOpen) {
@@ -258,7 +257,7 @@ public class Interpreter {
         }
     }
 
-    void parameterList() throws IOException, InterpreterException {
+    void parameterList() throws IOException{
         if (currentLexeme instanceof Lexer.LexIdentifier) {
             functionArgs.add(((Lexer.LexIdentifier)currentLexeme).identifier);
         }
@@ -274,7 +273,7 @@ public class Interpreter {
     /**
      * <identifier>"(" <parameter_list> ")" "={" <expression> "}"
      */
-    void functionDefinition() throws InterpreterException, IOException {
+    void functionDefinition() throws IOException {
         parameterList();
 
         if (!(currentLexeme instanceof Lexer.LexParenthesisClose)) {
@@ -299,7 +298,7 @@ public class Interpreter {
         moveNext();
     }
 
-    void functionDefinitionList() throws IOException, InterpreterException {
+    void functionDefinitionList() throws IOException{
         while (true) {
             if (!(currentLexeme instanceof Lexer.LexIdentifier)) {
                 return;
@@ -332,12 +331,17 @@ public class Interpreter {
     /**
      * <function-definition-list><expression>
      */
-    void interpret() throws IOException, InterpreterException {
-        moveNext();
-        functionDefinitionList();
-        expression();
-
-        commands.add(new Commands.ExitFunction());
-        System.out.println(program.run(commands));
+    void interpret() {
+        try {
+            moveNext();
+            functionDefinitionList();
+            expression();
+            commands.add(new Commands.ExitFunction());
+            System.out.println(program.run(commands));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

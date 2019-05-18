@@ -1,6 +1,5 @@
 package com.pawka.interpreter;
 
-import com.pawka.interpreter.exceptions.LexerException;
 import com.pawka.interpreter.exceptions.SyntaxError;
 
 import java.io.BufferedReader;
@@ -174,7 +173,7 @@ public class Lexer {
         line = 1;
     }
 
-    private boolean stateNone(int ch) throws LexerException{
+    private boolean stateNone(int ch){
         if (ch == -1) {
             lex = new LexEOF();
         } else if (map.containsKey(ch)) {
@@ -215,7 +214,7 @@ public class Lexer {
         return true;
     }
 
-    private boolean stateReadId(int ch) throws LexerException {
+    private boolean stateReadId(int ch) {
         if (Character.isLetter(ch) || ch == '_') {
             stringBuilder.append(ch);
         } else {
@@ -227,7 +226,7 @@ public class Lexer {
         return true;
     }
 
-    public Lex next() throws IOException, LexerException {
+    public Lex next() throws IOException{
         lex = null;
 
         while (lex == null) {

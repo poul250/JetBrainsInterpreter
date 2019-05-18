@@ -1,7 +1,6 @@
 package com.pawka.interpreter;
 
 import com.pawka.interpreter.exceptions.InterpreterException;
-import com.pawka.interpreter.exceptions.LexerException;
 
 import java.io.*;
 
@@ -19,14 +18,6 @@ public class Main {
         }
 
         Interpreter interpreter = new Interpreter(reader);
-        try {
-            interpreter.interpret();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (LexerException e) {
-            System.out.println(e.getMessage());
-        } catch (InterpreterException e) {
-            System.out.println(e.getMessage());
-        }
+        interpreter.interpret();
     }
 }
