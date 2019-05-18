@@ -28,14 +28,10 @@ public class Interpreter {
 
     private Lexer.Lex moveNext() throws IOException {
         if (lexBuffer.isEmpty()) {
-            currentLexeme = lexer.next();
-//            System.out.println(currentLexeme);
-            return currentLexeme;
+            return currentLexeme = lexer.next();
         }
 
-        currentLexeme = lexBuffer.pop();
-//        System.out.println(currentLexeme);
-        return currentLexeme;
+        return currentLexeme = lexBuffer.pop();
     }
 
     private void unget(Lexer.Lex lex) {
