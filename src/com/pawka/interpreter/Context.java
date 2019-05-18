@@ -8,6 +8,7 @@ public class Context {
 
     public Commands commands;
     public int address;
+    public int line;
 
     public Context() {
         variables = new HashMap<>();

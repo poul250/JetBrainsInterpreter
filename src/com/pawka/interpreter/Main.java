@@ -1,7 +1,5 @@
 package com.pawka.interpreter;
 
-import com.pawka.interpreter.exceptions.InterpreterException;
-
 import java.io.*;
 
 public class Main {

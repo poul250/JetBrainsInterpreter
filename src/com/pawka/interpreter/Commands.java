@@ -1,5 +1,8 @@
 package com.pawka.interpreter;
 
+import com.pawka.interpreter.exceptions.ArgumentNumberMismatch;
+import com.pawka.interpreter.exceptions.FunctionNotFound;
+
 import java.util.Stack;
 import java.util.Vector;
 
@@ -8,17 +11,8 @@ public class Commands extends Vector<Commands.Performer> {
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack);
     }
 
-    public static class Idle implements Performer {
-        @Override
-        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
-        }
-    }
-
     public static class Push implements Performer {
         private int value;
-        public Push() {
-            this(0);
-        }
         public Push(int value) {
             this.value = value;
         }
@@ -40,8 +34,6 @@ public class Commands extends Vector<Commands.Performer> {
             programStack.push(contextStack.peek().variables.get(name));
         }
     }
-
-
 
     public static class Add implements Performer {
         @Override
@@ -134,10 +126,6 @@ public class Commands extends Vector<Commands.Performer> {
         public void setAddress(int address) {
             this.address = address;
         }
-
-        public long getAddress() {
-            return address;
-        }
     }
 
     public static class GoTo implements Performer {
@@ -159,10 +147,6 @@ public class Commands extends Vector<Commands.Performer> {
         public void setAddress(int address) {
             this.address = address;
         }
-
-        public long getAddress() {
-            return address;
-        }
     }
 
     public static class FunctionCall implements Performer {
@@ -174,9 +158,17 @@ public class Commands extends Vector<Commands.Performer> {
 
         @Override
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            if (!Context.functions.containsKey(name)) {
+                throw new FunctionNotFound(name, contextStack.peek().line);
+            }
             Function func = Context.functions.get(name);
+            if (programStack.pop() != func.params.size()) {
+                throw new ArgumentNumberMismatch(name, contextStack.peek().line);
+            }
+
             Context context = new Context();
             context.commands = func.commands;
+            context.line = func.line;
             for (int i = func.params.size() - 1; i >= 0; --i) {
                 context.variables.put(func.params.get(i), programStack.pop());
             }
