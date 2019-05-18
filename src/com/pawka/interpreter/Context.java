@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Context {
     public ArrayList<String> argsList;
     public HashMap<String, Integer> variables;
-    public static HashMap<String, Commands> functions = new HashMap<>();
+    public static HashMap<String, Function> functions = new HashMap<>();
 
     public Commands commands;
     public int address;
@@ -21,7 +21,7 @@ public class Context {
         address = 0;
     }
 
-    public static void addFunction(String name, Commands commands) {
-        functions.put(name, commands);
+    public static void addFunction(String name, Function function) {
+        functions.put(name, function);
     }
 }
