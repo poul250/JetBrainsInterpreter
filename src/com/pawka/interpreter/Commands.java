@@ -5,7 +5,13 @@ import java.util.Vector;
 
 public class Commands extends Vector<Commands.Performer> {
     public static interface Performer {
-        public void perform(Context context, Stack<Integer> stack);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack);
+    }
+
+    public static class Idle implements Performer {
+        @Override
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+        }
     }
 
     public static class Push implements Performer {
@@ -18,86 +24,80 @@ public class Commands extends Vector<Commands.Performer> {
         }
 
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            stack.push(value);
-        }
-    }
-
-    public static class Idle implements Performer {
-        @Override
-        public void perform(Context context, Stack<Integer> stack) {
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            programStack.push(value);
         }
     }
 
     public static class Add implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push(op1 + op2);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push(op1 + op2);
         }
     }
 
     public static class Sub implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push(op1 - op2);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push(op1 - op2);
         }
     }
 
     public static class Mul implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push(op1 * op2);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push(op1 * op2);
         }
     }
 
     public static class Div implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push(op1 / op2);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push(op1 / op2);
         }
     }
 
     public static class Mod implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push(op1 % op2);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push(op1 % op2);
         }
     }
 
     public static class Less implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push((op1 < op2) ? 1 : 0);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push((op1 < op2) ? 1 : 0);
         }
     }
 
     public static class Greater implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push((op1 > op2) ? 1 : 0);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push((op1 > op2) ? 1 : 0);
         }
     }
 
     public static class Equals implements Performer {
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            int op2 = stack.pop();
-            int op1 = stack.pop();
-            stack.push((op1 == op2) ? 1 : 0);
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            int op2 = programStack.pop();
+            int op1 = programStack.pop();
+            programStack.push((op1 == op2) ? 1 : 0);
         }
     }
 
@@ -111,9 +111,9 @@ public class Commands extends Vector<Commands.Performer> {
         }
 
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            if (stack.pop() == 0) {
-                context.address = address;
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            if (programStack.pop() == 0) {
+                contextStack.peek().address = address;
             }
         }
 
@@ -138,8 +138,8 @@ public class Commands extends Vector<Commands.Performer> {
         }
 
         @Override
-        public void perform(Context context, Stack<Integer> stack) {
-            context.address = address;
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            contextStack.peek().address = address;
         }
 
         public void setAddress(int address) {

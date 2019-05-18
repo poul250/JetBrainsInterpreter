@@ -20,7 +20,7 @@ public class Program {
             Context context = contextStack.peek();
             Commands.Performer performer = context.commands.get(context.address);
             context.address += 1;
-            performer.perform(context, programStack);
+            performer.perform(contextStack, programStack);
             if (context.address >= context.commands.size()) {
                 contextStack.pop();
             }

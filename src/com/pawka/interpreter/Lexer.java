@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class Lexer {
-
     private BufferedReader reader;
     private StringBuilder stringBuilder;
     private static HashMap<Integer, Class<? extends Lex>> map;
