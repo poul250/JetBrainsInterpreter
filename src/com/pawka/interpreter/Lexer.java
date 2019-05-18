@@ -121,6 +121,16 @@ public class Lexer {
         }
     }
 
+    public static class LexQuestionMark extends Lex {
+        public LexQuestionMark() {
+        }
+    }
+
+    public static class LexColon extends Lex {
+        public LexColon() {
+        }
+    }
+
     public static class LexEOL extends Lex {
         public LexEOL() {
         }
@@ -148,6 +158,8 @@ public class Lexer {
             map.put((int)']', LexSquareClose.class);
             map.put((int)'{', LexBraceOpen.class);
             map.put((int)'}', LexBraceClose.class);
+            map.put((int)'?', LexQuestionMark.class);
+            map.put((int)':', LexColon.class);
             map.put((int)'\n', LexEOL.class);
         }
         this.reader = reader;
