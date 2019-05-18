@@ -29,6 +29,18 @@ public class Commands extends Vector<Commands.Performer> {
         }
     }
 
+    public static class PushVar implements Performer {
+        private String name;
+        public PushVar(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            programStack.push(contextStack.peek().variables.get(name));
+        }
+    }
+
     public static class Add implements Performer {
         @Override
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
