@@ -131,6 +131,11 @@ public class Lexer {
         }
     }
 
+    public static class LexComma extends Lex {
+        public LexComma() {
+        }
+    }
+
     public static class LexEOL extends Lex {
         public LexEOL() {
         }
@@ -160,6 +165,7 @@ public class Lexer {
             map.put((int)'}', LexBraceClose.class);
             map.put((int)'?', LexQuestionMark.class);
             map.put((int)':', LexColon.class);
+            map.put((int)',', LexComma.class);
             map.put((int)'\n', LexEOL.class);
         }
         this.reader = reader;
