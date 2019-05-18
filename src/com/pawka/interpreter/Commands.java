@@ -41,6 +41,8 @@ public class Commands extends Vector<Commands.Performer> {
         }
     }
 
+
+
     public static class Add implements Performer {
         @Override
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
@@ -160,6 +162,32 @@ public class Commands extends Vector<Commands.Performer> {
 
         public long getAddress() {
             return address;
+        }
+    }
+
+    public static class FunctionCall implements Performer {
+        private String name;
+
+        public FunctionCall(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            Function func = Context.functions.get(name);
+            Context context = new Context();
+            context.commands = func.commands;
+            for (int i = func.params.size() - 1; i >= 0; --i) {
+                context.variables.put(func.params.get(i), programStack.pop());
+            }
+            contextStack.push(context);
+        }
+    }
+
+    public static class ExitFunction implements Performer {
+        @Override
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            contextStack.pop();
         }
     }
 }

@@ -21,9 +21,6 @@ public class Program {
             Commands.Performer performer = context.commands.get(context.address);
             context.address += 1;
             performer.perform(contextStack, programStack);
-            if (context.address >= context.commands.size()) {
-                contextStack.pop();
-            }
         }
 
         return programStack.pop();
