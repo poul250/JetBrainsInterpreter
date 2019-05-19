@@ -341,34 +341,16 @@ public class Interpreter {
 
     /** <function-definition-list><expression>
      */
-    void interpret() {
+    int interpret() throws IOException {
         // create program
-        try {
-            moveNext();
+        moveNext();
 
-            functionDefinitionList();
-            expression();
+        functionDefinitionList();
+        expression();
 
-            commands.add(new Commands.ExitFunction());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return;
-        } catch (SyntaxError e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+        commands.add(new Commands.ExitFunction());
 
         // run program
-        try {
-            System.out.println(program.run(commands));
-        } catch (ArgumentNumberMismatch e) {
-            System.out.println(e.getMessage());
-        } catch (FunctionNotFound e) {
-            System.out.println(e.getMessage());
-        } catch (ParameterNotFound e) {
-            System.out.println(e.getMessage());
-        } catch (RuntimeException e) {
-            System.out.println("RUNTIME ERROR");
-        }
+        return program.run(commands);
     }
 }

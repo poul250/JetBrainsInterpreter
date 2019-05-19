@@ -1,5 +1,11 @@
 package com.pawka.interpreter;
 
+import com.pawka.interpreter.exceptions.ArgumentNumberMismatch;
+import com.pawka.interpreter.exceptions.FunctionNotFound;
+import com.pawka.interpreter.exceptions.ParameterNotFound;
+import com.pawka.interpreter.exceptions.SyntaxError;
+import jdk.nashorn.internal.runtime.regexp.joni.Syntax;
+
 import java.io.*;
 
 public class Main {
@@ -17,6 +23,20 @@ public class Main {
         }
 
         Interpreter interpreter = new Interpreter(reader);
-        interpreter.interpret();
+        try {
+            interpreter.interpret();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SyntaxError e) {
+            System.out.println(e.getMessage());
+        } catch (ArgumentNumberMismatch e) {
+            System.out.println(e.getMessage());
+        } catch (FunctionNotFound e) {
+            System.out.println(e.getMessage());
+        } catch (ParameterNotFound e) {
+            System.out.println(e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println(e);
+        }
     }
 }
