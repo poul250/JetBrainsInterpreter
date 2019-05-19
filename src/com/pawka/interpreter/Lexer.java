@@ -11,7 +11,7 @@ public class Lexer {
     private StringBuilder stringBuilder;
     private static HashMap<Integer, Class<? extends Lex>> map;
 
-    private int line = 0;
+    private int line = 1;
     private boolean readNewChar = true;
     private int ch;
 
@@ -203,7 +203,7 @@ public class Lexer {
 
     private boolean stateReadNum(int ch) {
         if (Character.isDigit(ch)) {
-            stringBuilder.append(ch);
+            stringBuilder.append((char)ch);
         } else {
             lex = new LexNumber(Integer.parseInt(stringBuilder.toString()));
             stringBuilder.setLength(0);
