@@ -10,6 +10,7 @@ public class Main {
                 reader = new BufferedReader(new FileReader(args[0]));
             } catch (FileNotFoundException e) {
                 System.out.println("Can't open file " + args[0]);
+                return;
             }
         } else {
             reader = new BufferedReader(new InputStreamReader(System.in));
