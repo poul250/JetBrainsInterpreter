@@ -334,9 +334,6 @@ public class Interpreter {
             // create new function
             Context.addFunction(name.identifier, new Function(functionArgs, commands, line));
 
-            for (Commands.Performer command : commands) {
-                System.out.println(command);
-            }
             commands = new Commands();
             functionArgs = new ArrayList<>();
         }
