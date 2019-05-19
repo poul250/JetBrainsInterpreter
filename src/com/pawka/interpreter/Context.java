@@ -15,6 +15,10 @@ public class Context {
         address = 0;
     }
 
+    public static void clear() {
+        functions.clear();
+    }
+
     public static void addFunction(String name, Function function) {
         functions.put(name, function);
     }

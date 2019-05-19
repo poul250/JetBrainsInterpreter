@@ -342,6 +342,7 @@ public class Interpreter {
     /** <function-definition-list><expression>
      */
     int interpret() throws IOException {
+        Context.clear();
         // create program
         moveNext();
 
