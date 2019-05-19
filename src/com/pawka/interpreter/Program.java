@@ -15,6 +15,7 @@ public class Program {
         Context initialContext = new Context();
         initialContext.commands = commands;
         contextStack.push(initialContext);
+        initialContext.line = Context.functions.size() + 1;
 
         while (!contextStack.isEmpty()) {
             Context context = contextStack.peek();

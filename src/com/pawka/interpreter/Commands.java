@@ -2,6 +2,7 @@ package com.pawka.interpreter;
 
 import com.pawka.interpreter.exceptions.ArgumentNumberMismatch;
 import com.pawka.interpreter.exceptions.FunctionNotFound;
+import com.pawka.interpreter.exceptions.ParameterNotFound;
 
 import java.util.Stack;
 import java.util.Vector;
@@ -9,6 +10,11 @@ import java.util.Vector;
 public class Commands extends Vector<Commands.Performer> {
     public static interface Performer {
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack);
+    }
+
+    public static class Idle implements Performer {
+        public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+        }
     }
 
     public static class Push implements Performer {
@@ -31,6 +37,9 @@ public class Commands extends Vector<Commands.Performer> {
 
         @Override
         public void perform(Stack<Context> contextStack, Stack<Integer> programStack) {
+            if (!contextStack.peek().variables.containsKey(name)) {
+                throw new ParameterNotFound(name, contextStack.peek().line);
+            }
             programStack.push(contextStack.peek().variables.get(name));
         }
     }

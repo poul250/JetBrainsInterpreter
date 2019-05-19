@@ -3,9 +3,9 @@ package com.pawka.interpreter;
 import java.util.HashMap;
 
 public class Context {
-    public HashMap<String, Integer> variables;
     public static HashMap<String, Function> functions = new HashMap<>();
 
+    public HashMap<String, Integer> variables;
     public Commands commands;
     public int address;
     public int line;
